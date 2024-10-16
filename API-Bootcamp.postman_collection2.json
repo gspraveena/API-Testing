@@ -1,0 +1,881 @@
+{
+	"info": {
+		"_postman_id": "f1a1c6d5-d1d6-4fa2-b441-4b7066d0ab33",
+		"name": "API-Bootcamp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25189632",
+		"_collection_link": "https://www.postman.com/api-bootcamp-0190/workspace/team-workspace/collection/25189632-f1a1c6d5-d1d6-4fa2-b441-4b7066d0ab33?action=share&source=collection_link&creator=25189632"
+	},
+	"item": [
+		{
+			"name": "createanUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.globals.set(\"userId\", pm.response.json().user_id);",
+							"   pm.globals.set(\"userFirstName\",pm.response.json().user_first_name);",
+							"",
+							"});",
+							"const response=pm.response.json();",
+							" console.log(response.status);",
+							"",
+							"//verify content type header is present or not",
+							"pm.test(\"verify content-Type header present\",function(){",
+							"        pm.response.to .have.header(\"Content-Type\");",
+							"})",
+							"",
+							" ",
+							"",
+							"// ---- JSON Schema Validation for 200 OK ----",
+							"if (pm.response.code === 201) {",
+							"    const successSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"user_id\": { \"type\": \"integer\" },",
+							"            \"user_first_name\": { \"type\": \"string\" },",
+							"            \"user_last_name\": { \"type\": \"string\" },",
+							"            \"user_contact_number\": { \"type\": \"integer\" },",
+							"            \"user_email_id\": { \"type\": \"string\", \"format\": \"email\" },",
+							"            \"userAddress\": {",
+							"                \"type\": \"object\",",
+							"                \"properties\": {",
+							"                    \"addressId\": { \"type\": \"integer\" },",
+							"                    \"plotNumber\": { \"type\": \"string\" },",
+							"                    \"street\": { \"type\": \"string\" },",
+							"                    \"state\": { \"type\": \"string\" },",
+							"                    \"country\": { \"type\": \"string\" },",
+							"                    \"zipCode\": { \"type\": \"integer\" }",
+							"                },",
+							"                \"required\": [\"addressId\", \"plotNumber\", \"street\", \"state\", \"country\", \"zipCode\"]",
+							"            },",
+							"            \"creation_time\": { \"type\": \"string\", \"format\": \"date-time\" },",
+							"            \"last_mod_time\": { \"type\": \"string\", \"format\": \"date-time\" }",
+							"        },",
+							"        \"required\": [\"user_id\", \"user_first_name\", \"user_last_name\", \"user_contact_number\", \"user_email_id\", \"userAddress\", \"creation_time\", \"last_mod_time\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response matches success schema\", function () {",
+							"        pm.response.to.have.jsonSchema(successSchema);",
+							"    });",
+							"",
+							"    // ---- Dynamic Field Validations for 200 OK ----",
+							"    const jsonData = pm.response.json();",
+							"    ",
+							"    // Validate against dynamic data from the collection or environment",
+							" ",
+							"",
+							"    pm.test(\"First name matches expected\", function () {",
+							"        pm.expect(jsonData.user_first_name).to.eql(pm.iterationData.get(\"user_first_name\") || pm.environment.get(\"user_first_name\"));",
+							"    });",
+							"",
+							"    pm.test(\"Last name matches expected\", function () {",
+							"        pm.expect(jsonData.user_last_name).to.eql(pm.iterationData.get(\"user_last_name\") || pm.environment.get(\"user_last_name\"));",
+							"    });",
+							"",
+							"    pm.test(\"Email matches expected\", function () {",
+							"        pm.expect(jsonData.user_email_id).to.eql(pm.iterationData.get(\"user_email_id\") || pm.environment.get(\"user_email_id\"));",
+							"    });",
+							"",
+							"    pm.test(\"Contact number matches expected\", function () {",
+							"        pm.expect(jsonData.user_contact_number).to.eql(pm.iterationData.get(\"user_contact_number\") || pm.environment.get(\"user_contact_number\"));",
+							"    });",
+							"",
+							"    pm.test(\"Address zip code matches expected\", function () {",
+							"        pm.expect(jsonData.userAddress.zipCode).to.eql(pm.iterationData.get(\"zipCode\") || pm.environment.get(\"zipCode\"));",
+							"    });",
+							"",
+							"    pm.test(\"Address state matches expected\", function () {",
+							"        pm.expect(jsonData.userAddress.state).to.eql(pm.iterationData.get(\"state\") || pm.environment.get(\"state\"));",
+							"    });",
+							"",
+							"    pm.test(\"Country matches expected\", function () {",
+							"        pm.expect(jsonData.userAddress.country).to.eql(pm.iterationData.get(\"country\") || pm.environment.get(\"country\"));",
+							"    });",
+							"",
+							"} else if (pm.response.code === 400) {",
+							"    // ---- JSON Schema Validation for 400 Bad Request ----",
+							"    const errorSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"status\": { \"type\": \"string\" },",
+							"            \"message\": { \"type\": \"string\" }",
+							"        },",
+							"        \"required\": [\"status\", \"message\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response matches error schema\", function () {",
+							"        pm.response.to.have.jsonSchema(errorSchema);",
+							"    });",
+							"",
+							"    // ---- Error Message Validation for Bad Request ----",
+							"    const jsonData = pm.response.json();",
+							"    ",
+							"",
+							"    // Validate that the correct error message is returned based on the response",
+							"pm.test(\"Error message is correct \"+ jsonData.message, function () {",
+							"    if (jsonData.message === \"UUser already exist with same email id\") {",
+							"        pm.expect(jsonData.message).to.eql(\"User already exist with same email id\");",
+							"    } else if (jsonData.message === \"User already exist with same contact number\") {",
+							"        pm.expect(jsonData.message).to.eql(\"User already exist with same contact number\");",
+							"    }",
+							"    else if (jsonData.message === \"user FirstName is mandatory and should contains alphabets only\"){",
+							"        pm.expect(jsonData.message).to.eql(\"user FirstName is mandatory and should contains alphabets only\");",
+							" }",
+							"    else if (jsonData.message === \"User LastName is mandatory and should contains alphabets only\"){",
+							"        pm.expect(jsonData.message).to.eql(\"User LastName is mandatory and should contains alphabets only\");",
+							"        }",
+							"    else if (jsonData.message === \"Plot number should contain alphaNumeric values only\"){",
+							"        pm.expect(jsonData.message).to.eql(\"Plot number should contain alphaNumeric values only\");",
+							"",
+							"    }  ",
+							"    else {",
+							"        pm.expect.fail(\"Unexpected error message: \" + jsonData.message);",
+							"    }",
+							"});",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "userapi@october",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "Numpy@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\n  {\n  \"userAddress\": {\n     \n    \"plotNumber\": \"{{plotNumber}}\",\n    \"street\": \"{{street}}\",\n    \"state\": \"{{state}}\",\n    \"country\": \"{{country}}\",\n    \"zipCode\": \"{{zipCode}}\"\n  },\n   \n  \"user_first_name\": \"{{user_first_name}}\",\n  \"user_last_name\": \"{{user_last_name}}\",\n  \"user_contact_number\": \"{{user_contact_number}}\",\n  \"user_email_id\": \"{{user_email_id}}\"\n   \n}\n\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/createusers",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"createusers"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST \"https://userserviceapp-f5a54828541b.herokuapp.com/uap/createusers\" -H \"accept: */*\" -H \"Content-Type: application/json\" -d \"{\\\"userAddress\\\":{\\\"addressId\\\":1234,\\\"plotNumber\\\":\\\"13-db\\\",\\\"street\\\":\\\"street\\\",\\\"state\\\":\\\"texas\\\",\\\"country\\\":\\\"unitedstates\\\",\\\"zipCode\\\":78641},\\\"user_first_name\\\":\\\"Praveena\\\",\\\"user_last_name\\\":\\\"hfjnfe\\\",\\\"user_contact_number\\\":9857372833,\\\"user_email_id\\\":\\\"abhd@gmail.com\\\",\\\"creation_time\\\":\\\"{{currentdatetime}}\\\",\\\"last_mod_time\\\":\\\"{{currentdatetime}}\\\"}\""
+			},
+			"response": []
+		},
+		{
+			"name": "allusers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"     ",
+							"});",
+							"const response=pm.response.json();",
+							" console.log(response.status);",
+							"",
+							"//verify content type header is present or not",
+							"pm.test(\"verify content-Type header present\",function(){",
+							"        pm.response.to .have.header(\"Content-Type\");",
+							"});",
+							"",
+							"// ---- JSON Schema Validation for 200 OK ----",
+							"if (pm.response.code === 201) {",
+							"    const successSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"user_id\": { \"type\": \"integer\" },",
+							"            \"user_first_name\": { \"type\": \"string\" },",
+							"            \"user_last_name\": { \"type\": \"string\" },",
+							"            \"user_contact_number\": { \"type\": \"integer\" },",
+							"            \"user_email_id\": { \"type\": \"string\", \"format\": \"email\" },",
+							"            \"userAddress\": {",
+							"                \"type\": \"object\",",
+							"                \"properties\": {",
+							"                    \"addressId\": { \"type\": \"integer\" },",
+							"                    \"plotNumber\": { \"type\": \"string\" },",
+							"                    \"street\": { \"type\": \"string\" },",
+							"                    \"state\": { \"type\": \"string\" },",
+							"                    \"country\": { \"type\": \"string\" },",
+							"                    \"zipCode\": { \"type\": \"integer\" }",
+							"                },",
+							"                \"required\": [\"addressId\", \"plotNumber\", \"street\", \"state\", \"country\", \"zipCode\"]",
+							"            },",
+							"            \"creation_time\": { \"type\": \"string\", \"format\": \"date-time\" },",
+							"            \"last_mod_time\": { \"type\": \"string\", \"format\": \"date-time\" }",
+							"        },",
+							"        \"required\": [\"user_id\", \"user_first_name\", \"user_last_name\", \"user_contact_number\", \"user_email_id\", \"userAddress\", \"creation_time\", \"last_mod_time\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response matches success schema\", function () {",
+							"        pm.response.to.have.jsonSchema(successSchema);",
+							"    });",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userAddress\": {\n      \n    \"plotNumber\": \"{{plotNumber}}\",\n    \"street\": \"{{street}}\",\n    \"state\": \"{{state}}\",\n    \"country\": \"{{country}}\",\n    \"zipCode\": \"{{zipcode}}\"\n  },\n    \n  \"user_first_name\": \"{{user_first_name}}\",\n  \"user_last_name\": \"{{user_last_name}}\",\n  \"user_contact_number\": \"{{user_contact_number}}\",\n  \"user_email_id\": \"{{user_email_id}}\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/users",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "usersbyuserID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"     ",
+							"});",
+							" const response=pm.response.json();",
+							" console.log(response.status);",
+							"",
+							"//verify content type header is present or not",
+							"pm.test(\"verify content-Type header present\",function(){",
+							"        pm.response.to .have.header(\"Content-Type\");",
+							"})",
+							"",
+							"",
+							"// ---- JSON Schema Validation for 200 OK ----",
+							"if (pm.response.code === 200) {",
+							"    const successSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"user_id\": { \"type\": \"integer\" },",
+							"            \"user_first_name\": { \"type\": \"string\" },",
+							"            \"user_last_name\": { \"type\": \"string\" },",
+							"            \"user_contact_number\": { \"type\": \"integer\" },",
+							"            \"user_email_id\": { \"type\": \"string\", \"format\": \"email\" },",
+							"            \"userAddress\": {",
+							"                \"type\": \"object\",",
+							"                \"properties\": {",
+							"                    \"addressId\": { \"type\": \"integer\" },",
+							"                    \"plotNumber\": { \"type\": \"string\" },",
+							"                    \"street\": { \"type\": \"string\" },",
+							"                    \"state\": { \"type\": \"string\" },",
+							"                    \"country\": { \"type\": \"string\" },",
+							"                    \"zipCode\": { \"type\": \"integer\" }",
+							"                },",
+							"                \"required\": [\"addressId\", \"plotNumber\", \"street\", \"state\", \"country\", \"zipCode\"]",
+							"            },",
+							"            \"creation_time\": { \"type\": \"string\", \"format\": \"date-time\" },",
+							"            \"last_mod_time\": { \"type\": \"string\", \"format\": \"date-time\" }",
+							"        },",
+							"        \"required\": [\"user_id\", \"user_first_name\", \"user_last_name\", \"user_contact_number\", \"user_email_id\", \"userAddress\", \"creation_time\", \"last_mod_time\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response matches success schema\", function () {",
+							"        pm.response.to.have.jsonSchema(successSchema);",
+							"    });",
+							"",
+							"    // ---- Dynamic Field Validations for 200 OK ----",
+							"    const jsonData = pm.response.json();",
+							"    ",
+							"    // Validate against dynamic data from the collection or environment",
+							"    pm.test(\"User ID matches expected\", function () {",
+							"        pm.expect(jsonData.user_id).to.eql(pm.iterationData.get(\"user_id\") || pm.environment.get(\"user_id\"));",
+							"    });",
+							"}",
+							"",
+							"else if (pm.response.code === 400) {",
+							"    // ---- JSON Schema Validation for 400 Bad Request ----",
+							"    const errorSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"status\": { \"type\": \"string\" },",
+							"            \"message\": { \"type\": \"string\" }",
+							"        },",
+							"        \"required\": [\"status\", \"message\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response matches error schema\", function () {",
+							"        pm.response.to.have.jsonSchema(errorSchema);",
+							"    });",
+							"}",
+							"",
+							"    // ---- Error Message Validation for Bad Request ----",
+							"    const jsonData = pm.response.json();",
+							"    ",
+							"",
+							"    "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userAddress\": {\n      \n    \"plotNumber\": \"{{plotNumber}}\",\n    \"street\": \"{{street}}\",\n    \"state\": \"{{state}}\",\n    \"country\": \"{{country}}\",\n    \"zipCode\": \"{{zipCode}}\"\n  },\n \n  \"user_first_name\": \"{{user_first_name}}\",\n  \"user_last_name\": \"{{user_last_name}}\",\n  \"user_contact_number\": \"{{user_contact_number}}\",\n  \"user_email_id\": \"{{user_email_id}}\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/user/{{userId}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"user",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "userbyusername",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"     ",
+							"});",
+							" const response=pm.response.json();",
+							" console.log(response.status);",
+							"",
+							"//verify content type header is present or not",
+							"pm.test(\"verify content-Type header present\",function(){",
+							"        pm.response.to.have.header(\"Content-Type\");",
+							"})",
+							" ",
+							" ",
+							" "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userAddress\": {\n      \n    \"plotNumber\": \"{{plotNumber}}\",\n    \"street\": \"{{street}}\",\n    \"state\": \"{{state}}\",\n    \"country\": \"{{country}}\",\n    \"zipCode\": \"{{zipcode}}\"\n  },\n    \n  \"user_first_name\": \"{{user_first_name}}\",\n  \"user_last_name\": \"{{user_last_name}}\",\n  \"user_contact_number\": \"{{user_contact_number}}\",\n  \"user_email_id\": \"{{user_email_id}}\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/users/username/{{userFirstName}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"users",
+						"username",
+						"{{userFirstName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updatebyuserId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    var jsonData = pm.response.json();",
+							"    //pm.globals.set(\"userId\", jsonData.user_id);",
+							"",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"verify content-Type header present\",function(){",
+							"        pm.response.to .have.header(\"Content-Type\");",
+							"})",
+							"",
+							"// ---- JSON Schema Validation for 200 OK ----",
+							"if (pm.response.code === 200) {",
+							"    const successSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"user_id\": { \"type\": \"integer\" },",
+							"            \"user_first_name\": { \"type\": \"string\" },",
+							"            \"user_last_name\": { \"type\": \"string\" },",
+							"            \"user_contact_number\": { \"type\": \"integer\" },",
+							"            \"user_email_id\": { \"type\": \"string\", \"format\": \"email\" },",
+							"            \"userAddress\": {",
+							"                \"type\": \"object\",",
+							"                \"properties\": {",
+							"                    \"addressId\": { \"type\": \"integer\" },",
+							"                    \"plotNumber\": { \"type\": \"string\" },",
+							"                    \"street\": { \"type\": \"string\" },",
+							"                    \"state\": { \"type\": \"string\" },",
+							"                    \"country\": { \"type\": \"string\" },",
+							"                    \"zipCode\": { \"type\": \"integer\" }",
+							"                },",
+							"                \"required\": [\"addressId\", \"plotNumber\", \"street\", \"state\", \"country\", \"zipCode\"]",
+							"            },",
+							"            \"creation_time\": { \"type\": \"string\", \"format\": \"date-time\" },",
+							"            \"last_mod_time\": { \"type\": \"string\", \"format\": \"date-time\" }",
+							"        },",
+							"        \"required\": [\"user_id\", \"user_first_name\", \"user_last_name\", \"user_contact_number\", \"user_email_id\", \"userAddress\", \"creation_time\", \"last_mod_time\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response matches success schema\", function () {",
+							"        pm.response.to.have.jsonSchema(successSchema);",
+							"    });",
+							"",
+							"    // ---- Dynamic Field Validations for 200 OK ----",
+							"    const jsonData = pm.response.json();",
+							"    ",
+							"    // Validate against dynamic data from the collection or environment",
+							"    pm.test(\"User ID matches expected\", function () {",
+							"        pm.expect(jsonData.user_id).to.eql(pm.iterationData.get(\"user_id\") || pm.environment.get(\"user_id\"));",
+							"    });",
+							"",
+							"    pm.test(\"First name matches expected\", function () {",
+							"        pm.expect(jsonData.user_first_name).to.eql(pm.iterationData.get(\"user_first_name\") || pm.environment.get(\"user_first_name\"));",
+							"    });",
+							"",
+							"    pm.test(\"Last name matches expected\", function () {",
+							"        pm.expect(jsonData.user_last_name).to.eql(pm.iterationData.get(\"user_last_name\") || pm.environment.get(\"user_last_name\"));",
+							"    });",
+							"",
+							"    pm.test(\"Email matches expected\", function () {",
+							"        pm.expect(jsonData.user_email_id).to.eql(pm.iterationData.get(\"user_email_id\") || pm.environment.get(\"user_email_id\"));",
+							"    });",
+							"",
+							"    pm.test(\"Contact number matches expected\", function () {",
+							"        pm.expect(jsonData.user_contact_number).to.eql(pm.iterationData.get(\"user_contact_number\") || pm.environment.get(\"user_contact_number\"));",
+							"    });",
+							"",
+							"    pm.test(\"Address zip code matches expected\", function () {",
+							"        pm.expect(jsonData.userAddress.zipCode).to.eql(pm.iterationData.get(\"zipCode\") || pm.environment.get(\"zipCode\"));",
+							"    });",
+							"",
+							"    pm.test(\"Address state matches expected\", function () {",
+							"        pm.expect(jsonData.userAddress.state).to.eql(pm.iterationData.get(\"state\") || pm.environment.get(\"state\"));",
+							"    });",
+							"",
+							"    pm.test(\"Country matches expected\", function () {",
+							"        pm.expect(jsonData.userAddress.country).to.eql(pm.iterationData.get(\"country\") || pm.environment.get(\"country\"));",
+							"    });",
+							"",
+							"} else if (pm.response.code === 404) {",
+							"    // ---- JSON Schema Validation for 400 Bad Request ----",
+							"    const errorSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"status\": { \"type\": \"string\" },",
+							"            \"message\": { \"type\": \"string\" }",
+							"        },",
+							"        \"required\": [\"status\", \"message\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response matches error schema\", function () {",
+							"        pm.response.to.have.jsonSchema(errorSchema);",
+							"    });",
+							"",
+							"    // ---- Error Message Validation for Bad Request ----",
+							"    const jsonData = pm.response.json();",
+							"    ",
+							"",
+							"    // Validate that the correct error message is returned based on the response",
+							"pm.test(\"Error message is correct \"+ jsonData.message, function () {",
+							"    if (jsonData.message === \"Contact number is already in use by another user\") {",
+							"        pm.expect(jsonData.message).to.eql(\"Contact number is already in use by another user\");",
+							"    } else if (jsonData.message === \"Street should contain alphabet characters only\") {",
+							"        pm.expect(jsonData.message).to.eql(\"Street should contain alphabet characters only\");",
+							"    }",
+							"    else if (jsonData.message === \"User First Name is mandatory and should contains alphabets only\"){",
+							"        pm.expect(jsonData.message).to.eql(\"User First Name is mandatory and should contains alphabets only\");",
+							"    }",
+							"    else if (jsonData.message === \"Country should contain alphabet characters only\"){",
+							"        pm.expect(jsonData.message).to.eql(\"Country should contain alphabet characters only\");",
+							"    }else if (jsonData.message === \"Contact number is already in use by another user\"){",
+							"        pm.expect(jsonData.message).to.eql(\"Contact number is already in use by another user\");",
+							"    }else if (jsonData.message.includes(\"User not found with id:\")) {",
+							"        pm.expect(jsonData.message).to.include(\"User not found with id:\"); // Check if message indicates user not found",
+							"    }",
+							"    else if (jsonData.message === \"Internal Server Error\") {",
+							"        pm.expect(jsonData.message).to.eql(\"Internal Server Error\");",
+							"    }  ",
+							"    else {",
+							"        pm.expect.fail(\"Unexpected error message: \" + jsonData.message);",
+							"    }",
+							"});",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userAddress\": {\n      \n    \"plotNumber\": \"{{plotNumber}}\",\n    \"street\": \"{{street}}\",\n    \"state\": \"tn\",\n    \"country\": \"{{country}}\",\n    \"zipCode\": \"{{zipCode}}\"\n  },\n \n  \"user_first_name\": \"{{user_first_name}}\",\n  \"user_last_name\": \"{{user_last_name}}\",\n  \"user_contact_number\": \"{{user_contact_number}}\",\n  \"user_email_id\": \"{{user_email_id}}\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/updateuser/{{userId}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"updateuser",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteuserbyFirstname",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" // ---- Test: Response Schema Validation ----",
+							"if (pm.response.code === 200) {",
+							"    const schema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"message\": { \"type\": \"string\" },   // Success message like \"User deleted\"",
+							"            \"status\": { \"type\": \"string\" }",
+							"        },",
+							"        \"required\": [\"message\", \"status\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response schema is valid for 200\", function () {",
+							"        pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    const errorSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"message\": { \"type\": \"string\" },  // Error message",
+							"            \"status\": { \"type\": \"string\" },   // Should be \"failure\"",
+							"            \"errorCode\": { \"type\": \"string\" } // Optional: error code for further details",
+							"        },",
+							"        \"required\": [\"message\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response schema is valid for 404\", function () {",
+							"        pm.expect(ajv.validate(pm.response.json(), errorSchema)).to.be.true;",
+							"    });",
+							"}",
+							"",
+							"// ---- Test: Response Data Validation for 200 Success ----",
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"",
+							" ",
+							"",
+							"    pm.test(\"Response contains success message\", function () {",
+							"        pm.expect(jsonData.message).to.include(\"deleted\"); // Example message: \"User deleted successfully\"",
+							"    });",
+							"",
+							"    pm.test(\"Status field is success\", function () {",
+							"        pm.expect(jsonData.status).to.include(\"Success\"); // Ensure the status is success",
+							"    });",
+							"}",
+							"",
+							"// ---- Test: Response Data Validation for 400 Bad Request ----",
+							"if (pm.response.code === 404) {",
+							"    var errorData = pm.response.json();",
+							"",
+							"    pm.test(\"Error message is present\" , function () {",
+							"        pm.expect(errorData.message).to.be.a(\"string\"); // Ensure the error message exists",
+							"    });",
+							"",
+							"    pm.test(\"Status field is failure\", function () {",
+							"        pm.expect(errorData.status).to.eql(\"404 NOT_FOUND\"); // Ensure the status is failure",
+							"    });",
+							"",
+							"   ",
+							"}",
+							" ",
+							" "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/deleteuser/username/{{userFirstName}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"deleteuser",
+						"username",
+						"{{userFirstName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteuserbyId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" // ---- Test: Response Schema Validation ----",
+							"if (pm.response.code === 200) {",
+							"    const schema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"message\": { \"type\": \"string\" },   // Success message like \"User deleted\"",
+							"            \"status\": { \"type\": \"string\" }",
+							"        },",
+							"        \"required\": [\"message\", \"status\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response schema is valid for 200\", function () {",
+							"        pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+							"    });",
+							"} else if (pm.response.code === 404) {",
+							"    const errorSchema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"message\": { \"type\": \"string\" },  // Error message",
+							"            \"status\": { \"type\": \"string\" },   // Should be \"failure\"",
+							"            \"errorCode\": { \"type\": \"string\" } // Optional: error code for further details",
+							"        },",
+							"        \"required\": [\"message\"]",
+							"    };",
+							"",
+							"    pm.test(\"Response schema is valid for 404\", function () {",
+							"        pm.expect(ajv.validate(pm.response.json(), errorSchema)).to.be.true;",
+							"    });",
+							"}",
+							"",
+							"// ---- Test: Response Data Validation for 200 Success ----",
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"",
+							" ",
+							"",
+							"    pm.test(\"Response contains success message\", function () {",
+							"        pm.expect(jsonData.message).to.include(\"deleted\"); // Example message: \"User deleted successfully\"",
+							"    });",
+							"",
+							"    pm.test(\"Status field is success\", function () {",
+							"        pm.expect(jsonData.status).to.include(\"Success\"); // Ensure the status is success",
+							"    });",
+							"}",
+							"",
+							"// ---- Test: Response Data Validation for 400 Bad Request ----",
+							"if (pm.response.code === 404) {",
+							"    var errorData = pm.response.json();",
+							"",
+							"    pm.test(\"Error message is present\" , function () {",
+							"        pm.expect(errorData.message).to.be.a(\"string\"); // Ensure the error message exists",
+							"    });",
+							"",
+							"    pm.test(\"Status field is failure\", function () {",
+							"        pm.expect(errorData.status).to.eql(\"404 NOT_FOUND\"); // Ensure the status is failure",
+							"    });",
+							"",
+							"   ",
+							"}",
+							" ",
+							" "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}/deleteuser/{{userId}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"deleteuser",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "Numpy@gmail.com",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "userapi@october",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
